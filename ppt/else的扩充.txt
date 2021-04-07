@@ -1,0 +1,43 @@
+if(sym==ifsym)
+					{
+						getsymdo();
+						memcpy(nxtlev,fsys,sizeof(bool)*symnum);
+						nxtlev[thensym]=true;
+						nxtlev[dosym]=true;					//后跟符号为then或do(多余)
+						conditiondo(nxtlev,ptx,lev);			//条件语句处理
+
+						if(sym==thensym)
+						{
+							getsymdo();
+						}
+						else
+						{
+							error(16);							//缺少then
+						}
+						cx1=cx;									//保存当前指令地址
+						gendo(jpc,0,0,"\0");//生成条件跳转指令，在之后语句处理完后回填a即跳转到地址的值
+						statementdo(fsys,ptx,lev);				//处理then之后的语句
+						if(sym==elsesym)				     	//if-else形式处理
+						{
+							getsymdo();
+							gendo(jmp,0,0,"\0");					//直接跳转指令
+							code[cx1].a=cx;							//回填之前的跳转位置
+							cx1=cx-1;
+							statementdo(fsys,ptx,lev);				//处理else之后的语句
+							code[cx1].a=cx;					//回填之前的jmp跳转位置
+						}
+						else									//if形式处理
+						{
+							code[cx1].a=cx;					//回填之前的跳转位置
+						}
+			}
+该代码改进的思想就是在then之后语句处理后增加一个jmp跳转指令直接跳过else部分之后，填入方式仍然是先初始化在回填。当然代码改进部分还涉及到了错误提示，比如在else之前若是复合语句，当最后的end之后误填有分号时，为了防止整个编译系统的崩溃，我们在外层的begin-end语句处理部分做相应处理，处理如下：
+if(sym==semicolon)
+								{
+									getsymdo();
+									if(sym==elsesym)
+									{
+										error(37);			//end与else之间不应该有;
+										getsymdo();
+									}
+如果不跳过此时读到的else，会导致整个编译系统的崩溃，所以我们可以选择跳过并错误提示。这样pl/0程序就既可以保留if-then的结构，也扩充了一个if-then-else的结构。

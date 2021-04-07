@@ -1,0 +1,35 @@
+if(ch=='+')
+						{
+							getchdo();
+							if(ch=='+')
+							{
+								sym=self_plus;
+								getchdo();
+							}
+							else
+							{
+								if(ch=='=')
+								{
+									sym=plus_eql;
+									getchdo();
+								}
+								else
+								{
+									sym=plus;
+								}
+							}
+						}
+改进的代码中包括了++的处理，在之后我们会讲解。
+同理我们可以对其他三种改进。我们之前分析，它属于赋值语句的范围，所以我们需要在statement函数中进行相应改进，还用+=举例如下：
+if(sym==plus_eql)
+					{
+						gendo(lod,lev-table[i].level,table[i].adr,"\0");
+						getsymdo();
+						memcpy(nxtlev,fsys,sizeof(bool)*symnum);
+						expressiondo(nxtlev,ptx,lev);			//表达式处理
+						if(i!=0)
+						{
+							gendo(opr,0,2,"\0");
+							gendo(sto,lev-table[i].level,table[i].adr,"\0");
+						}
+					}

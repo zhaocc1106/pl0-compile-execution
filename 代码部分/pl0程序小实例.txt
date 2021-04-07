@@ -1,0 +1,36 @@
+const _a1=10.10;		
+var _b,c_;			
+procedure p;
+	procedure p1;
+		procedure p2;
+			begin
+				_b-=_a1
+			end;
+		begin
+			call p2;
+			_b+=_a1
+		end;
+	begin
+		call p1;
+		c_:=_b+_a1
+	end;
+begin
+	read(_b);
+	if !(_b>=1) then
+	begin
+		call p;
+		write(-2.11*c_-100^(1/2)+100%3)\×¢ÊÍ
+	end
+	else
+	begin
+		read(_b);
+		_b+=_a1;
+		write(_b);
+		_b++;
+		write(_b);
+		_b--;
+		write(_b);
+		_b/=_a1;
+		write(_b)
+	end
+end.\×¢ÊÍ
