@@ -1,0 +1,68 @@
+if(sym==negation)								//！逻辑非处理
+		{
+			getsymdo();
+			if(sym!=lparen)
+			{
+				error(34);
+			}
+			else
+			{
+				getsymdo();
+			}
+			memcpy(nxtlev,fsys,sizeof(bool)*symnum);
+			nxtlev[eql]=true;
+			nxtlev[neq]=true;
+			nxtlev[lss]=true;
+			nxtlev[leq]=true;
+			nxtlev[gtr]=true;
+			nxtlev[geq]=true;
+			expressiondo(nxtlev,ptx,lev);					//此时表达式处理中的后跟符号集包括了逻辑运算符
+			if(sym!=eql&&sym!=neq&&sym!=lss&&sym!=leq&&sym!=gtr&&sym!=geq)
+			{
+				error(20);									//此时表达式后面应该为逻辑运算符
+			}
+			else
+			{
+				relop=sym;
+				getsymdo();
+				expressiondo(fsys,ptx,lev);					//对逻辑运算符后面的表达式进行处理
+				switch(relop)								//根据两个表达式之间不同的逻辑运算符来决定生成不同的目标代码
+				{
+				case eql:
+					gendo(opr,0,8,"\0");							//生成等号的逻辑运算
+					break;
+				case neq:
+					gendo(opr,0,9,"\0");							//生成不等号的逻辑运算
+					break;
+				case lss:
+					gendo(opr,0,10,"\0");						//生成小于号的逻辑运算
+					break;
+				case geq:
+					gendo(opr,0,11,"\0");						//生成大于等于号的逻辑运算
+					break;
+				case gtr:
+					gendo(opr,0,12,"\0");						//生成大于号的逻辑运算
+					break;
+				case leq:									//生成小于等于号的逻辑运算
+					gendo(opr,0,13,"\0");
+					break;
+				}
+				if(sym!=rparen)
+				{
+					error(22);
+				}
+				else
+				{
+					getsymdo();
+				}
+				gendo(opr,0,17,"\0");						//生成！运算代码
+			}
+}
+从改进代码中我们发现！后面应该跟上（）来指定范围，如果没有（）将会进行错误处理，在改进的最后我们发现增加了一个新指令（opr，0，17），所以在interpret函数中增加一项opr-17的处理，如下：
+case 17:
+					if(s[t-1]==0)
+						s[t-1]=1;
+					else
+						s[t-1]=0;
+					break;
+这样就实现了！运算。

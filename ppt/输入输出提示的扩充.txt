@@ -1,0 +1,45 @@
+我们确实增加了一个数组分量来保存输入的变量名或者输出的表达式字符串。而这个分量在大部分情况下是无意义的，所以我们用”\0”来代表无意义，这就是为什么我们之前改进的代码中很多gendo最后一个参数都是”\0”的原因。我们可以感受出来，实现输入提示很简单，因为输入就一个变量名，只需在read语句部分做如下修改即可：
+do
+				{
+					getsymdo();
+					if(sym==ident)
+					{
+						i=position(id,*ptx);	
+					}
+					else
+					{
+						i=0;
+					}
+					if(i==0)
+					{
+						error(35);					//变量未声明
+					}
+					else
+					{
+						gendo(opr,0,16,table[i].name);			//生成输入指令，读入数据到栈顶
+						gendo(sto,lev-table[i].level,table[i].adr,"\0");
+					}
+					getsymdo();
+				}while(sym==comma);			//一条read语句可读入多个变量的值
+在interpret的opr-16处理部分我们做如下修改：
+case 16:								//进行读数操作
+					printf("%s=?\n",i.name);
+					fprintf(fa2,"%s=?\n",i.name);				
+					scanf("%f",&(s[t]));					//读数到栈顶
+					fprintf(fa2,"%g\n",s[t]);
+					t++;
+					break;
+这样我们就实现了输入的提示。
+输出的提示的实现要比之前的输入提示要麻烦的多，因为它是个表达式，既包括多个变量和常量也包括算术符号，我们是这样实现的。首先我们声明了一个全局变量char experssion_string[100] ={0};，该变量在表达式以及项和因子部分都有处理，用于形成表达式字符串。但是我们又意识到，当当前碰到的是常量时，不能直接实现常量数据直接进入字符串中，所以我们又定义一个全局变量char num_string[nmax]={0};用于保存当前常量形成的字符串，把变量形成字符串我们使用的是_gcvt函数进行转换的，相应语句为_gcvt(num,nmax-2,num_string);。当然这个函数有一个缺点，就是它会把一个浮点数的变长，比如会把2.11保存成2.10999999的字符串，但是这不影响给我们的输出提示。
+由于expression_string的形成分布在多个地方，所以我们只举一个例子说明，完整的扩充见代码文件。比如项部分的处理：
+if(mulop==times)
+			strcat(experssion_string,"*");
+		else
+			if(mulop==slash)
+				strcat(experssion_string,"/");
+			else
+				if(mulop==complementation)
+					strcat(experssion_string,"%");
+				else
+					strcat(experssion_string,"^");
+同样在形成输出指令的时候我们就可以把当前形成的表达式字符串填到gen函数的最后一个参数上，相应语句为gendo(opr,0,14,experssion_string);。同样我们也应该在interpret函数中输出指令处理部分做改动。

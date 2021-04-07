@@ -1,0 +1,33 @@
+if(ch=='.')							//代表数字是浮点数
+			{
+				getchdo();
+				if(ch>='0'&&ch<='9')
+				{
+					i=10;
+					while((ch>='0'&&ch<='9')||ch=='.')
+					{
+						if(ch=='.')
+						{
+							error(36);
+							while((ch>='0'&&ch<='9')||ch=='.')		//跳过之后的数字和小数点
+							{
+								getchdo();
+							}
+							break;
+						}
+						num+=((float)(ch-'0'))/i;
+						i*=10;
+						k++;
+						getchdo();
+					}
+				}
+				else
+				{
+					error(35);					//小数点后面应为数字
+				}
+			}
+			k--;
+			if(k>nmax)
+			{
+				error(30);
+			}

@@ -1,0 +1,19 @@
+getch函数改进部分如下：
+
+if(ch=='\\')							//\作为注释的开始符，碰到后跳到下一行
+			{
+				if(EOF==fscanf(fin,"%c",&ch))		//碰到文件结束符
+				{
+					line[ll]=0;
+					break;
+				}
+				while(ch!='\n')
+				{
+					if(EOF==fscanf(fin,"%c",&ch))		//碰到文件结束符
+					{
+						line[ll]=0;
+						ch='\n';
+						break;
+					}
+				}
+	}
